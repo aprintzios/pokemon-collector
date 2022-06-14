@@ -1,0 +1,14 @@
+
+{% extends 'base.html' %}
+{% block content %}
+<form method="POST" action="/poke/{{ poke.id }}/update">
+    {% csrf_token %}
+
+    Name: <input name="name" value="{{ poke.name }}">
+    Type: <input name="type" value="{{ poke.poke_type }}" >
+    Attack: <input name="attack" value="{{ poke.attack }}">
+    Level: <input name="level" type="number" value="{{ poke.level }}" >
+    
+    <button type="submit">Update</button>
+</form>
+{% endblock %}
