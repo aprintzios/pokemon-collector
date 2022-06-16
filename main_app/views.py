@@ -3,18 +3,13 @@ from .models import Poke
 
 from django.http import HttpResponse
 
-# class Poke:  # Note that parens are optional if not inheriting from another class
-#   def __init__(self, name, poke_type, attack, level):
-#     self.name = name
-#     self.poke_type = poke_type
-#     self.attack = attack
-#     self.level = level
+import uuid
+import boto3
+from .models import Poke, Item, Photo
 
-# poke = [
-#   Poke('pikachu', 'electric', 'electro ball', 81),
-#   Poke('charmander', 'fire', 'fire blast', 61),
-#   Poke('wartortle', 'water', 'hydro pump', 93),
-# ]
+S3_BASE_URL = 'https://s3.ca-central-1.amazonaws.com/'
+BUCKET = 'pokecollector'
+
 def home(request):
   return render(request, 'home.html')
 
@@ -27,7 +22,6 @@ def poke_index(request):
 
 def show(request,poke_id):
   pokemon = Poke.objects.get(id=poke_id)
-  print(pokemon)
   return render(request, 'poke/show.html', {'pokemon': pokemon})
 
 def new(request):
@@ -59,3 +53,22 @@ def update(request, poke_id):
 def delete(request, poke_id):
   Poke.objects.filter(id=poke_id).delete()
   return redirect('/poke')
+
+def add_photo(request, poke_id):
+    # photo-file will be the "name" attribute on the <input type="file">
+    photo_file = request.FILES.get('photo-file', None)
+    if photo_file:
+        s3 = boto3.client('s3')
+        # need a unique "key" for S3 / needs image file extension too
+        key = uuid.uuid4().hex[:6] + photo_file.name[photo_file.name.rfind('.'):]
+        # just in case something goes wrong
+        try:
+            s3.upload_fileobj(photo_file, BUCKET, key)
+            # build the full url string
+            url = f"{S3_BASE_URL}{BUCKET}/{key}"
+            # we can assign to cat_id or cat (if you have a cat object)
+            photo = Photo(url=url, poke_id=poke_id)
+            photo.save()
+        except:
+            print('An error occurred uploading file to S3')
+    return redirect(f'/poke/{poke_id}')
