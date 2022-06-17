@@ -12,4 +12,9 @@ urlpatterns = [
   path('poke/<int:poke_id>/update', views.update, name='update'),
   path('poke/<int:poke_id>/delete', views.delete, name='delete'),
   path('poke/<int:poke_id>/add_photo/', views.add_photo, name='add_photo'),
+  path('poke/<int:poke_id>/add_item', views.add_item, name="add_item"),
+  path('poke/<int:poke_id>/add_attack/<int:attack_id>', views.ass_attack, name="ass_attack"),
+  path('attack/new', views.new_attack, name="new_attack"),
+  path('attack/submit', views.add_attack, name="add_attack")
+
 ]

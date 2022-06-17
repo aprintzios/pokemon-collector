@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>Add an attack:</h1>
+<form method="POST" action="/attack/submit">
+    {% csrf_token %}
+    Name: <input name="name">
+    Type: <input name="type">
+    <button type="submit">Add</button>
+</form>
+<h1>All attacks:</h1>
+{% for attack in attacks %}
+    <div class="col s6">
+      <div class="card">
+        <p>Name: {{ attack.name }}</p>
+        <p>Type: {{ attack.type }}</p>
+
+      </div>
+    </div>
+    {% endfor %}
+
+{% endblock %}
